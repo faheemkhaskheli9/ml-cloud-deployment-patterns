@@ -1,0 +1,5 @@
+[project]
+name = "ml-cloud-deployment-patterns"
+version = "0.1.0"
+description = "Cloud ML Deployment Examples"
+requires-python = ">=3.10"
