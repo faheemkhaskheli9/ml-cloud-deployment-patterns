@@ -4,7 +4,7 @@
 > This is an original, from-scratch build. It is not affiliated with, and does not
 > contain any code, prompts, data, or business logic from, any employer or client.
 
-![status](https://img.shields.io/badge/status-planned-lightgrey)
+![status](https://img.shields.io/badge/status-in%20progress-yellow)
 ![python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![license](https://img.shields.io/badge/license-MIT-green)
 
@@ -105,9 +105,39 @@ auto-generated OpenAPI docs, e.g. `/docs` for FastAPI)._
 
 ## 13. Docker
 
+### Common packaging baseline (Phase 1)
+
+`docker/Dockerfile` is the single source of truth for packaging the sample
+model + inference server. It installs `requirements.txt`, copies `src/`, bakes
+the sample model artifact into the image at build time (`python -m src.train`),
+and serves it with uvicorn on port 8000.
+
 ```bash
-docker build -t ml-cloud-deployment-patterns .
-docker run -p 8000:8000 ml-cloud-deployment-patterns
+docker build -t ml-cloud-deploy-base:latest -f docker/Dockerfile .
+docker run --rm -p 8000:8000 ml-cloud-deploy-base:latest
+
+curl localhost:8000/health
+curl -X POST localhost:8000/predict \
+  -H 'content-type: application/json' \
+  -d '{"instances": [[5.1, 3.5, 1.4, 0.2]]}'
+```
+
+### Cloud-specific images
+
+Each provider example builds **`FROM ml-cloud-deploy-base:latest`** and only adds
+deployment glue — it never re-installs dependencies or re-bakes the model:
+
+| File | Cloud | Phase |
+|------|-------|-------|
+| `docker/azure.Dockerfile` | Azure ML | 2 |
+| `docker/aws.Dockerfile` | AWS SageMaker | 3 |
+| `docker/gcp.Dockerfile` | GCP Vertex AI | 4 |
+
+### Run the server without Docker
+
+```bash
+python -m src.train                       # writes models/sample_model.joblib
+uvicorn src.server:app --port 8000        # then open http://127.0.0.1:8000/docs
 ```
 
 ## 14. Tests

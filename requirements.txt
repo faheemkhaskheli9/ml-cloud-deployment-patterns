@@ -1,1 +1,10 @@
-# Fill in with the exact package versions used once implementation starts.
+# Baseline packaging + inference server dependencies.
+# Cloud SDKs are extras in pyproject.toml (azure/aws/gcp).
+fastapi>=0.110
+uvicorn[standard]>=0.27
+scikit-learn>=1.3
+joblib>=1.3
+numpy>=1.24
+pydantic>=2.5,<3
+httpx>=0.27
+pytest>=7.4

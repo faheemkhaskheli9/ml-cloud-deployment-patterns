@@ -1,0 +1,32 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Cloud Deploy: train sample model",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "src.train",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Cloud Deploy: run inference server (uvicorn)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": ["src.server:app", "--reload", "--port", "8000"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": { "MODEL_PATH": "models/sample_model.joblib" }
+    },
+    {
+      "name": "Cloud Deploy: pytest",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "pytest",
+      "args": ["tests/", "-v"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}
