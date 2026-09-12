@@ -1,0 +1,27 @@
+# Azure ML managed online deployment definition (CLI v2 schema).
+# https://learn.microsoft.com/azure/machine-learning/reference-yaml-deployment-managed-online
+#
+# Create with (after the endpoint above exists):
+#   az ml online-deployment create -f examples/azure/deployment.yaml -g <resource-group> -w <workspace>
+#
+# Gotcha: instance_type/instance_count are billed against a per-subscription
+# quota that is separate from your regular VM quota -- see docs/architecture.md
+# "Azure ML deployment (Phase 2)" for the quota gotcha this config's validator
+# (src/azure_deploy.py) flags automatically.
+
+$schema: https://azuremlschemas.azureedge.net/latest/managedOnlineDeployment.schema.json
+name: blue
+endpoint_name: ml-cloud-deploy-endpoint
+instance_type: Standard_DS2_v2
+instance_count: 1
+environment:
+  # Built from docker/azure.Dockerfile, pushed to an Azure Container
+  # Registry the workspace has pull access to.
+  image: mlclouddeployacr.azurecr.io/ml-cloud-deploy-azure:latest
+code_configuration:
+  code: ../../src
+  scoring_script: ../azure/score.py
+# First rollout: deploy at 0% traffic, smoke-test the endpoint directly, then
+# shift traffic with `az ml online-endpoint update` (see gotcha in
+# docs/architecture.md -- the validator warns if this is 100% before that).
+traffic_percentage: 0

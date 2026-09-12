@@ -27,6 +27,15 @@
       "args": ["tests/", "-v"],
       "console": "integratedTerminal",
       "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Cloud Deploy: Azure deployment plan (dry-run)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "src.main",
+      "args": ["azure-plan"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
     }
   ]
 }
